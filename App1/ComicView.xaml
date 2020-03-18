@@ -1,0 +1,62 @@
+﻿<Page
+    x:Class="App1.BlankPage1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App1"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Background="Black">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        
+        <!--<CommandBar x:Name="TopBar" ClosedDisplayMode="Compact" VerticalAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2" Content="Example Name Here" VerticalContentAlignment="Top" Visibility="Visible" IsOpen="True">
+            <AppBarButton Icon="View" VerticalAlignment="Stretch" />
+        </CommandBar>-->
+        <NavigationView PaneDisplayMode="Top" IsBackEnabled="True" IsSettingsVisible="False">
+            <NavigationView.MenuItems>
+                <!--<TextBlock Text="Your cbz name here"/>
+                <NavigationViewItem Content="Your cbz name here"></NavigationViewItem>-->
+                <RichTextBlock>
+                    <Paragraph FontSize="16" FontWeight="Bold">Main heading</Paragraph>
+                    <Paragraph FontSize="11">Subheading</Paragraph>
+                </RichTextBlock>
+            </NavigationView.MenuItems>
+            <NavigationView.PaneFooter>
+                <StackPanel>
+                    <CommandBar ClosedDisplayMode="Compact" OverflowButtonVisibility="Collapsed" Background="{x:Null}">
+                        <AppBarButton Label="Brightness" Icon="View"></AppBarButton>
+                        <AppBarButton Label="Settings" Icon="Setting"></AppBarButton>
+                    </CommandBar>
+                </StackPanel>
+            </NavigationView.PaneFooter>
+        </NavigationView>
+        <FlipView Tapped="image_Tapped" Grid.Row="1">
+            <ScrollViewer
+                  ZoomMode="Enabled" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                <Image x:Name="image" Source="/Assets/test/01.jpg"/>
+            </ScrollViewer>
+            <!--<Image x:Name="image2" Source="/Assets/test/02.jpg"/>
+            <Image x:Name="image3" Source="/Assets/test/03.jpg"/>
+            <Image x:Name="image4" Source="/Assets/test/04.jpg"/>
+            <Image x:Name="image5" Source="/Assets/test/05.jpg"/>
+            <Image x:Name="image6" Source="/Assets/test/06.jpg"/>-->
+        </FlipView>
+        <CommandBar x:Name="BottomBar" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Grid.Row="5" Width="1494">
+            <CommandBar.Content>
+                <Grid/>
+            </CommandBar.Content>
+            <AppBarButton Icon="Accept" Label="AppBarButton"/>
+            <AppBarButton Icon="Cancel" Label="AppBarButton"/>
+        </CommandBar>
+
+
+    </Grid>
+</Page>
