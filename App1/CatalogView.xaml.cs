@@ -126,7 +126,8 @@ namespace App1
         {
 
             var index = (sender as ListView).SelectedIndex;
-            Frame rootFrame = Window.Current.Content as Frame;
+            //Frame rootFrame = Window.Current.Content as Frame;
+            Frame rootFrame = this.Frame;
             rootFrame.Navigate(typeof(CatalogBrowser), CatalogManager.Instance.catalogs[index]);
         }
     }

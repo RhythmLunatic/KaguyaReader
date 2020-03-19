@@ -81,67 +81,21 @@ namespace App1
         }
 
 
-        static async Task<bool> DoesFileExistAsync(string fileName)
-        {
-
-            System.Diagnostics.Debug.WriteLine("Does "+fileName + " exist?");
-            try
-            {
-                await ApplicationData.Current.LocalCacheFolder.GetFileAsync(fileName);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
         private async void loadImage()
         {
             if (hasThumb)
             {
-                using (IRandomAccessStream fileStream = await FileRandomAccessStream.OpenAsync(imagePath, Windows.Storage.FileAccessMode.Read))
-                {
-                    // Set the image source to the selected bitmap 
-                    BitmapImage bitmapImage = new BitmapImage();
-                    bitmapImage.DecodePixelWidth = 500; //match the target Image.Width, not shown
-                    await bitmapImage.SetSourceAsync(fileStream);
-                    Image = bitmapImage;
-                    System.Diagnostics.Debug.WriteLine(title + " finished loading thumb!");
-                }
+                Image = await MangaUtils.LoadImageAsync(imagePath);
             }
             else if (type == BROWSABLE_TYPE.SINGLE_FILE || type == BROWSABLE_TYPE.FOLDER_WITH_MANGA)
             {
-                StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalCacheFolder;
-                string fileToTest = safeThumbName() + ".png";
-                if (await DoesFileExistAsync(fileToTest))
+                //StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalCacheFolder;
+                //Surely there is a less bad way to do this right
+                foreach(string fileToTest in new string[]{ safeThumbName() + ".png", safeThumbName() + ".jpg" })
                 {
-                    StorageFile file = await localFolder.GetFileAsync(fileToTest);
-                    using (IRandomAccessStream fileStream = await file.OpenAsync(FileAccessMode.Read))
+                    if (await MangaUtils.DoesCachedFileExistAsync(fileToTest))
                     {
-
-                        // Set the image source to the selected bitmap 
-                        BitmapImage bitmapImage = new BitmapImage();
-                        bitmapImage.DecodePixelWidth = 500; //match the target Image.Width, not shown
-                        await bitmapImage.SetSourceAsync(fileStream);
-                        Image = bitmapImage;
-                        Debug.WriteLine("Got cached thumb.");
-                        return;
-                    }
-                }
-                //fix it later
-                 fileToTest = safeThumbName() + ".jpg";
-                if (await DoesFileExistAsync(fileToTest))
-                {
-                    StorageFile file = await localFolder.GetFileAsync(fileToTest);
-                    using (IRandomAccessStream fileStream = await file.OpenAsync(FileAccessMode.Read))
-                    {
-
-                        // Set the image source to the selected bitmap 
-                        BitmapImage bitmapImage = new BitmapImage();
-                        bitmapImage.DecodePixelWidth = 500; //match the target Image.Width, not shown
-                        await bitmapImage.SetSourceAsync(fileStream);
-                        Image = bitmapImage;
-                        Debug.WriteLine("Got cached thumb.");
+                        Image = await MangaUtils.LoadImageFromCache(fileToTest);
                         return;
                     }
                 }
@@ -195,7 +149,7 @@ namespace App1
             //If they don't want to add a cover.jpg/png then just find the latest manga I guess
             else if (type == BROWSABLE_TYPE.FOLDER_WITH_MANGA)
             {
-                var files = Directory.EnumerateFiles(path).Where(s => Globals.ValidComicFileTypes.Contains(Path.GetExtension(s).ToLowerInvariant()));
+                var files = Directory.EnumerateFiles(path).Where(s => MangaUtils.ValidComicFileTypes.Contains(Path.GetExtension(s).ToLowerInvariant()));
                 files.OrderBy(e => e);
                 fileToOpen = files.FirstOrDefault();
             }
@@ -205,16 +159,17 @@ namespace App1
             }
 
             System.Diagnostics.Debug.WriteLine(fileToOpen);
-            switch (Path.GetExtension(fileToOpen).ToLowerInvariant())
+            MangaUtils.ComicTypes fileType = MangaUtils.getTypeFromExtension(Path.GetExtension(fileToOpen).ToLowerInvariant());
+            switch (fileType)
             {
-                case ".cbz":
-                case ".zip":
+                case MangaUtils.ComicTypes.ZIP:
                     using (FileStream zipToOpen = new FileStream(fileToOpen, FileMode.Open))
                     {
 
                         using (ZipArchive cbz = new ZipArchive(zipToOpen, ZipArchiveMode.Read))
                         {
-                            var entries = cbz.Entries.OrderBy(e => e.Name);
+                            //What absolute GENIUS includes an xml in a cbz?
+                            var entries = cbz.Entries.Where(s => (s.Name.EndsWith(".jpg") || s.Name.EndsWith(".png"))).OrderBy(e => e.Name);
                             var firstEntry = entries.FirstOrDefault();
                             System.Diagnostics.Debug.WriteLine(firstEntry);
                             Stream fileStream = firstEntry.Open();
@@ -245,6 +200,11 @@ namespace App1
                             //await FileIO.Wri
                             /*foreach (var entry in entries)
                                 System.Diagnostics.Debug.Write(entry);*/
+                            /*
+                             * "But wait don't we already have the image in memory why are you loading it from disk again"
+                             * You fix it, it's async and I don't care
+                             */
+                            Image = await MangaUtils.LoadImageFromCache(fileName);
                         }
                     }
                     break;
@@ -270,7 +230,7 @@ namespace App1
             ObservableCollection<BrowsableManga> mangas = new ObservableCollection<BrowsableManga>();
             
             //Filter only valid files
-            var files = Directory.EnumerateFiles(path).Where(s => Globals.ValidComicFileTypes.Contains(Path.GetExtension(s).ToLowerInvariant()));
+            var files = Directory.EnumerateFiles(path).Where(s => MangaUtils.ValidComicFileTypes.Contains(Path.GetExtension(s).ToLowerInvariant()));
             foreach (string file in files)
             {
                 mangas.Add(new BrowsableManga(Path.GetFileNameWithoutExtension(file), file, BROWSABLE_TYPE.SINGLE_FILE));
@@ -278,8 +238,8 @@ namespace App1
             var directories = Directory.EnumerateDirectories(path);
             foreach(string directory in directories)
             {
-                var filesInDir = Directory.EnumerateFiles(directory).Where(s => Globals.ValidComicFileTypes.Contains(Path.GetExtension(s).ToLowerInvariant()));
-                System.Diagnostics.Debug.WriteLine(filesInDir.ToList().Count);
+                var filesInDir = Directory.EnumerateFiles(directory).Where(s => MangaUtils.ValidComicFileTypes.Contains(Path.GetExtension(s).ToLowerInvariant()));
+                //System.Diagnostics.Debug.WriteLine(filesInDir.ToList().Count);
                 if (filesInDir.Any())
                 {
                     //TODO: Check if cover.jpg/png/bmp exists
@@ -309,9 +269,11 @@ namespace App1
     {
         Catalog currentCatalog;
         ObservableCollection<BrowsableManga> mangas;
+        MenuFlyout sharedFlyout;
         public CatalogBrowser()
         {
             this.InitializeComponent();
+            sharedFlyout = (MenuFlyout)Resources["SampleContextMenu"];
         }
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
@@ -350,6 +312,55 @@ namespace App1
             {
                 //GetImageFromCBZ(img);
             }
+        }
+
+        // Handles system-level BackRequested events and page-level back button Click events
+        private bool On_BackRequested()
+        {
+            if (this.Frame.CanGoBack)
+            {
+                this.Frame.GoBack();
+                return true;
+            }
+            return false;
+        }
+
+        private void MangaListing_ContextRequested(UIElement sender, ContextRequestedEventArgs e)
+        {
+            // Walk up the tree to find the ListViewItem.
+            // There may not be one if the click wasn't on an item.
+            var requestedElement = (FrameworkElement)e.OriginalSource;
+            while ((requestedElement != sender) && !(requestedElement is GridViewItem))
+            {
+                requestedElement = (FrameworkElement)VisualTreeHelper.GetParent(requestedElement);
+            }
+            if (requestedElement != sender)
+            {
+                // The context menu request was indeed for a ListViewItem.
+                var model = (BrowsableManga)MangaListing.ItemFromContainer(requestedElement);
+                //MainPage rootPage = MainPage.Current;
+                Point point;
+
+                if (e.TryGetPosition(requestedElement, out point))
+                {
+                    Debug.WriteLine($"Showing flyout for {model.title} at {point}");
+                    //rootPage.NotifyUser($"Showing flyout for {model.title} at {point}", NotifyType.StatusMessage);
+                    sharedFlyout.ShowAt(requestedElement, point);
+                }
+                else
+                {
+                    // Not invoked via pointer, so let XAML choose a default location.
+                    //rootPage.NotifyUser($"Showing flyout for {model.title} at default location", NotifyType.StatusMessage);
+                    sharedFlyout.ShowAt(requestedElement);
+                }
+
+                e.Handled = true;
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            On_BackRequested();
         }
     }
 }

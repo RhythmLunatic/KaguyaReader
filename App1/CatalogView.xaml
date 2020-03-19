@@ -13,6 +13,7 @@
         directly on the ListView's item source to for further optimization. Please see the AppUIBasics sample for an example of how to do this.  -->
         <CollectionViewSource x:Name="CataloguesCVS"  IsSourceGrouped="False" />
 
+        <!-- TODO: Add buttons to configure the catalogues -->
         <DataTemplate x:Name="CatalogListTemplate" x:DataType="local:Catalog">
             <Grid>
                 <Grid.RowDefinitions>

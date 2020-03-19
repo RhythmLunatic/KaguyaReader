@@ -107,5 +107,20 @@ namespace App1
                 splitter.OpenPaneLength = windowWidth <= 500 ? windowWidth : 500;
             }
         }
+
+        // Handles system-level BackRequested events and page-level back button Click events
+        private bool On_BackRequested()
+        {
+            if (this.Frame.CanGoBack)
+            {
+                this.Frame.GoBack();
+                return true;
+            }
+            return false;
+        }
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            On_BackRequested();
+        }
     }
 }

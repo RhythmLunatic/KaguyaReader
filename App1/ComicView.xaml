@@ -37,12 +37,14 @@
                 </StackPanel>
             </NavigationView.PaneFooter>
         </NavigationView>
-        <FlipView Tapped="image_Tapped" Grid.Row="1">
-            <ScrollViewer
-                  ZoomMode="Enabled" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <FlipView Tapped="image_Tapped" Grid.Row="1" ItemsSource="{x:Bind ImageCollection, Mode=OneWay}">
+            <DataTemplate x:DataType="local:MangaImage">
 
-                <Image x:Name="image" Source="/Assets/test/01.jpg"/>
-            </ScrollViewer>
+                <ScrollViewer ZoomMode="Enabled" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                    <Image x:Name="image" Source="{x:Bind Image}"/>
+                </ScrollViewer>
+            </DataTemplate>
             <!--<Image x:Name="image2" Source="/Assets/test/02.jpg"/>
             <Image x:Name="image3" Source="/Assets/test/03.jpg"/>
             <Image x:Name="image4" Source="/Assets/test/04.jpg"/>

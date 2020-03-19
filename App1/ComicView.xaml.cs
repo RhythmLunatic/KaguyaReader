@@ -12,19 +12,40 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Media.Imaging;
+using System.Collections.ObjectModel;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace App1
 {
+    public struct MangaImage
+    {
+        public BitmapImage Image;
+        public MangaImage(BitmapImage image)
+        {
+            Image = image;
+        }
+    }
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     public sealed partial class BlankPage1 : Page
     {
+        ObservableCollection<MangaImage> ImageCollection = new ObservableCollection<MangaImage>();
+        
+        private async void loadTestImages()
+        {
+            MangaImage img = new MangaImage(await MangaUtils.LoadImageFromAssets(@"Assets\test\01.jpg"));
+            ImageCollection.Add(img);
+            /*for (int i = 1; i <= 6; i++)
+                ImageCollection.Add(new MangaImage(await MangaUtils.LoadImageFromAssets("test/0" + i.ToString())));
+            */
+        }
         public BlankPage1()
         {
             this.InitializeComponent();
+            loadTestImages();
         }
 
         private void image_Tapped(object sender, TappedRoutedEventArgs e)
