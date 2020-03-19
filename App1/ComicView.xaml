@@ -37,12 +37,12 @@
                 </StackPanel>
             </NavigationView.PaneFooter>
         </NavigationView>
-        <FlipView Tapped="image_Tapped" Grid.Row="1" ItemsSource="{x:Bind ImageCollection, Mode=OneWay}">
+        <FlipView Tapped="image_Tapped" Grid.Row="1" ItemsSource="{x:Bind ImageCollection, Mode=OneWay}" x:Name="flipView">
             <DataTemplate x:DataType="local:MangaImage">
 
                 <ScrollViewer ZoomMode="Enabled" HorizontalAlignment="Center" VerticalAlignment="Center">
 
-                    <Image x:Name="image" Source="{x:Bind Image}"/>
+                    <Image x:Name="image" Source="{x:Bind Image, Mode=OneWay}"/>
                 </ScrollViewer>
             </DataTemplate>
             <!--<Image x:Name="image2" Source="/Assets/test/02.jpg"/>
@@ -53,7 +53,9 @@
         </FlipView>
         <CommandBar x:Name="BottomBar" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Grid.Row="5" Width="1494">
             <CommandBar.Content>
-                <Grid/>
+                <StackPanel Orientation="Horizontal">
+                    <Slider Width="500" Value="{Binding SelectedIndex, ElementName=flipView}"></Slider>
+                </StackPanel>
             </CommandBar.Content>
             <AppBarButton Icon="Accept" Label="AppBarButton"/>
             <AppBarButton Icon="Cancel" Label="AppBarButton"/>

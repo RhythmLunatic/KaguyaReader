@@ -98,7 +98,7 @@ namespace App1
             }
             catch
             {
-                throw new Exception("File doesn't exist.");
+                throw new Exception("The file "+ fileName+" doesn't exist.");
                 return new BitmapImage();
             }
             

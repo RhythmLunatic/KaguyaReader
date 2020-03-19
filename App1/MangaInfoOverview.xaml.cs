@@ -89,7 +89,7 @@ namespace App1
             //Cover.Source = thisManga.imagePath;
 
             updateCover();
-            foreach (var file in Directory.EnumerateFiles(directory))
+            foreach (var file in Directory.EnumerateFiles(directory).Where(s => MangaUtils.ValidComicFileTypes.Contains(Path.GetExtension(s).ToLowerInvariant())))
             {
                 chapterList.Add(new ChapterListing(Path.GetFileNameWithoutExtension(file).Replace(thisManga.title + " ", ""), file));
             }

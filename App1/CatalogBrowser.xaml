@@ -31,6 +31,7 @@
             <MenuFlyoutItem Text="Add To Library"  />
             <MenuFlyoutItem Text="Print" />
             <MenuFlyoutItem Text="Delete" />
+            <MenuFlyoutItem Text="Refresh Cover" Click="MenuFlyoutItem_Click" />
         </MenuFlyout>
     </Page.Resources>
     <Grid>

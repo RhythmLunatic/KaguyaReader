@@ -136,9 +136,10 @@ namespace App1
         
         /// <summary>
         /// Gets the first image in the cbz.
+        /// It's public because you can refresh the cover from the right click menu. THough I dunno why you'd use it
         /// </summary>
-        /// TODO: Async it pls
-        private async void GetImageFromCBZ()
+        /// TODO: Async it pls. Walking directories is slow.
+        public async void GetImageFromCBZ()
         {
             //string fileName = safeThumbName();
             string fileToOpen;
@@ -169,12 +170,15 @@ namespace App1
                         using (ZipArchive cbz = new ZipArchive(zipToOpen, ZipArchiveMode.Read))
                         {
                             //What absolute GENIUS includes an xml in a cbz?
-                            var entries = cbz.Entries.Where(s => (s.Name.EndsWith(".jpg") || s.Name.EndsWith(".png"))).OrderBy(e => e.Name);
+                            var entries = cbz.Entries.Where(s => (s.Name.EndsWith(".jpg") || s.Name.EndsWith(".png") || s.Name.EndsWith(".jpeg"))).OrderBy(e => e.Name);
                             var firstEntry = entries.FirstOrDefault();
                             System.Diagnostics.Debug.WriteLine(firstEntry);
                             Stream fileStream = firstEntry.Open();
 
-                            string fileName = safeThumbName() + Path.GetExtension(firstEntry.Name).ToLowerInvariant();
+                            string extension = Path.GetExtension(firstEntry.Name).ToLowerInvariant();
+                            if (extension == ".jpeg") //Fuck jpeg
+                                extension = ".jpg";
+                            string fileName = safeThumbName() + extension;
                             //fileStream.Read()
                             //what the fuck
                             using (MemoryStream ms = new MemoryStream())
@@ -325,6 +329,14 @@ namespace App1
             return false;
         }
 
+        private BrowsableManga GetDataModelForCurrentListViewFlyout()
+        {
+            // Obtain the ListViewItem for which the user requested a context menu.
+            var listViewItem = sharedFlyout.Target;
+
+            // Get the data model for the ListViewItem.
+            return (BrowsableManga)MangaListing.ItemFromContainer(listViewItem);
+        }
         private void MangaListing_ContextRequested(UIElement sender, ContextRequestedEventArgs e)
         {
             // Walk up the tree to find the ListViewItem.
@@ -361,6 +373,14 @@ namespace App1
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             On_BackRequested();
+        }
+
+        private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            BrowsableManga model = GetDataModelForCurrentListViewFlyout();
+            model.GetImageFromCBZ();
+            //Debug.WriteLine(model.title + " clicked");
+            //rootPage.NotifyUser($"Item: {model.Title}, Action: Open", NotifyType.StatusMessage);
         }
     }
 }
