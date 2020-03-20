@@ -8,7 +8,18 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid Background="Black">
+    <Page.Resources>
+        <CollectionViewSource x:Name="MangaCVS" IsSourceGrouped="False"></CollectionViewSource>
+        <DataTemplate x:DataType="local:MangaImage" x:Name="flipViewData">
+
+            <!--<Image x:Name="image" Width="400" Source="{x:Bind Image, Mode=OneWay}"/>-->
+            <ScrollViewer ZoomMode="Enabled" HorizontalAlignment="Center" VerticalAlignment="Center" MinZoomFactor="0.5">
+
+                <Image x:Name="image" Source="{x:Bind Image, Mode=OneWay}"/>
+            </ScrollViewer>
+        </DataTemplate>
+    </Page.Resources>
+    <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
@@ -31,20 +42,19 @@
             <NavigationView.PaneFooter>
                 <StackPanel>
                     <CommandBar ClosedDisplayMode="Compact" OverflowButtonVisibility="Collapsed" Background="{x:Null}">
-                        <AppBarButton Label="Brightness" Icon="View"></AppBarButton>
+                        <AppBarButton Label="Brightness" Icon="View" Click="AppBarButton_Click"></AppBarButton>
                         <AppBarButton Label="Settings" Icon="Setting"></AppBarButton>
                     </CommandBar>
                 </StackPanel>
             </NavigationView.PaneFooter>
         </NavigationView>
-        <FlipView Tapped="image_Tapped" Grid.Row="1" ItemsSource="{x:Bind ImageCollection, Mode=OneWay}" x:Name="flipView">
-            <DataTemplate x:DataType="local:MangaImage">
+        <FlipView
+            Tapped="image_Tapped" 
+            Grid.Row="1" 
+            ItemsSource="{x:Bind MangaCVS.View}"
+            ItemTemplate="{x:Bind flipViewData}"
+            x:Name="flipView">
 
-                <ScrollViewer ZoomMode="Enabled" HorizontalAlignment="Center" VerticalAlignment="Center">
-
-                    <Image x:Name="image" Source="{x:Bind Image, Mode=OneWay}"/>
-                </ScrollViewer>
-            </DataTemplate>
             <!--<Image x:Name="image2" Source="/Assets/test/02.jpg"/>
             <Image x:Name="image3" Source="/Assets/test/03.jpg"/>
             <Image x:Name="image4" Source="/Assets/test/04.jpg"/>

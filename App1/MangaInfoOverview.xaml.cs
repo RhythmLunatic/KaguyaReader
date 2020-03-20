@@ -45,39 +45,11 @@ namespace App1
             this.InitializeComponent();
         }
 
-        private async void updateCover()
+        //It doesn't need to be async when the image is already loaded, right?
+        private void updateCover()
         {
             if (thisManga.Image != null)
                 CoverImage.Source = thisManga.Image;
-            //There's no point in this...
-            /*if (thisManga.thumbIsCached)
-            {
-                StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalCacheFolder;
-                StorageFile file = await localFolder.GetFileAsync(thisManga.imagePath);
-                using (IRandomAccessStream fileStream = await file.OpenAsync(FileAccessMode.Read))
-                {
-
-                    // Set the image source to the selected bitmap 
-                    BitmapImage bitmapImage = new BitmapImage();
-                    bitmapImage.DecodePixelWidth = 500; //match the target Image.Width, not shown
-                    await bitmapImage.SetSourceAsync(fileStream);
-                    CoverImage.Source = bitmapImage;
-                }
-            }
-            else
-            {
-
-                if (!thisManga.hasThumb)
-                    return;
-                using (IRandomAccessStream fileStream = await FileRandomAccessStream.OpenAsync(thisManga.imagePath, Windows.Storage.FileAccessMode.Read))
-                {
-                    // Set the image source to the selected bitmap 
-                    BitmapImage bitmapImage = new BitmapImage();
-                    bitmapImage.DecodePixelWidth = 500; //match the target Image.Width, not shown
-                    await bitmapImage.SetSourceAsync(fileStream);
-                    CoverImage.Source = bitmapImage;
-                }
-            }*/
         }
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {

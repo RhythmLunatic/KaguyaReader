@@ -64,7 +64,7 @@
         <SplitView DisplayMode="Inline" Grid.Row="1" IsPaneOpen="True" OpenPaneLength="500" LayoutUpdated="SplitView_LayoutUpdated" x:Name="splitView">
             <SplitView.Pane>
                 <Canvas Width="{Binding Path=OpenPaneLength, ElementName=splitView}" HorizontalAlignment="Center" VerticalAlignment="Stretch" x:Name="CoverCanvas">
-                    <Image x:Name="CoverImage" Source="Assets/cover.png" Stretch="UniformToFill" Width="{Binding Path=OpenPaneLength, ElementName=splitView}" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+                    <Image x:Name="CoverImage" Stretch="UniformToFill" Width="{Binding Path=OpenPaneLength, ElementName=splitView}" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
                     <TextBlock Text="Hello World!" Canvas.ZIndex="1" Foreground="White" />
                 </Canvas>
             </SplitView.Pane>
