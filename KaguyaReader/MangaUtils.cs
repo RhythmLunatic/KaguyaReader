@@ -7,7 +7,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
 using Windows.Storage;
 
-namespace App1
+namespace KaguyaReader
 {
     public static class MangaUtils
     {

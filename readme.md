@@ -15,3 +15,12 @@ It's named kaguya reader because it's mainly for manga. No, I don't think it's a
 - MangaDex and possibly other browser support. I don't think UWP has plugin support however.
 - Downloading manga from a non-local catalog
 - The majority of features Tachiyomi already has
+
+# How to install
+On a PC:
+1. Enable developer mode
+2. Download the zip, double click the ps1
+
+On a Phone:
+
+???

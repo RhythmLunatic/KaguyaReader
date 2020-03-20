@@ -1,0 +1,45 @@
+﻿<Page
+    x:Class="KaguyaReader.SettingsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:KaguyaReader"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <NavigationView PaneDisplayMode="Top" IsBackButtonVisible="Collapsed" Content="" IsSettingsVisible="False">
+            <NavigationView.MenuItems>
+                <NavigationViewItem  Content="General" Icon="List" />
+                <NavigationViewItem Content="Reader" Icon="Library" />
+                <NavigationViewItem Content="Downloads" Icon="Download"></NavigationViewItem>
+                <NavigationViewItem Content="Tracking" Icon="Sync"></NavigationViewItem>
+                <NavigationViewItem Content="Backup" Icon="SaveLocal"></NavigationViewItem>
+                <NavigationViewItem Content="Advanced" Icon="Admin"></NavigationViewItem>
+                <NavigationViewItem Content="About" Icon="Important"/>
+                <NavigationViewItem Content="Usage" Icon="Help"></NavigationViewItem>
+            </NavigationView.MenuItems>
+            <!--<NavigationView.PaneFooter>
+                <StackPanel>
+                    <CommandBar ClosedDisplayMode="Compact" OverflowButtonVisibility="Collapsed" Background="{x:Null}">
+                        <AppBarButton Label="Brightness" Icon="View"></AppBarButton>
+                        <AppBarButton Label="Settings" Icon="Setting"></AppBarButton>
+                    </CommandBar>
+                </StackPanel>
+            </NavigationView.PaneFooter>-->
+        </NavigationView>
+        <!--<CommandBar>
+            <AppBarButton  Content="General" Icon="List" />
+            <AppBarButton Content="Reader" Icon="Library" />
+            <AppBarButton Content="Downloads" Icon="Download"></AppBarButton>
+            <AppBarButton Content="Tracking" Icon="Sync"></AppBarButton>
+            <AppBarButton Content="Backup" Icon="SaveLocal"></AppBarButton>
+            <AppBarButton Content="Advanced" Icon="Admin"></AppBarButton>
+            <AppBarButton Content="About" Icon="Important"/>
+
+        </CommandBar>-->
+        <Frame x:Name="SettingsFrame"></Frame>
+
+    </Grid>
+</Page>
