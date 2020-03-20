@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="KaguyaReader.BlankPage1"
+    x:Class="KaguyaReader.ComicView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:KaguyaReader"
@@ -30,13 +30,13 @@
         <!--<CommandBar x:Name="TopBar" ClosedDisplayMode="Compact" VerticalAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2" Content="Example Name Here" VerticalContentAlignment="Top" Visibility="Visible" IsOpen="True">
             <AppBarButton Icon="View" VerticalAlignment="Stretch" />
         </CommandBar>-->
-        <NavigationView PaneDisplayMode="Top" IsBackEnabled="True" IsSettingsVisible="False">
+        <NavigationView PaneDisplayMode="Top" IsBackEnabled="True" IsSettingsVisible="False" BackRequested="NavigationView_BackRequested">
             <NavigationView.MenuItems>
                 <!--<TextBlock Text="Your cbz name here"/>
                 <NavigationViewItem Content="Your cbz name here"></NavigationViewItem>-->
                 <RichTextBlock>
-                    <Paragraph FontSize="16" FontWeight="Bold">Main heading</Paragraph>
-                    <Paragraph FontSize="11">Subheading</Paragraph>
+                    <Paragraph FontSize="16" FontWeight="Bold" x:Name="mainHeading"></Paragraph>
+                    <Paragraph FontSize="11" x:Name="subHeading"></Paragraph>
                 </RichTextBlock>
             </NavigationView.MenuItems>
             <NavigationView.PaneFooter>

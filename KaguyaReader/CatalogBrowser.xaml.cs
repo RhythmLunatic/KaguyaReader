@@ -305,6 +305,12 @@ namespace KaguyaReader
                 Frame rootFrame = Window.Current.Content as Frame;
                 rootFrame.Navigate(typeof(MangaInfoOverview), selectedManga);
             }
+            else if (selectedManga.type == BROWSABLE_TYPE.SINGLE_FILE)
+            {
+
+                Frame rootFrame = Window.Current.Content as Frame;
+                rootFrame.Navigate(typeof(ComicView), new SimpleMangaData(selectedManga.path, selectedManga.title, ""));
+            }
         }
 
 

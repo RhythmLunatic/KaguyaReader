@@ -94,5 +94,14 @@ namespace KaguyaReader
         {
             On_BackRequested();
         }
+
+        private void Listing_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+            Frame rootFrame = Window.Current.Content as Frame;
+            var m = chapterList[Listing.SelectedIndex];
+            //var n = ;
+            rootFrame.Navigate(typeof(ComicView), new SimpleMangaData(m.Path, thisManga.title, m.Name));
+        }
     }
 }

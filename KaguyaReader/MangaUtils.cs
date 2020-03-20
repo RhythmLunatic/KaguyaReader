@@ -99,7 +99,7 @@ namespace KaguyaReader
             catch
             {
                 throw new Exception("The file "+ fileName+" doesn't exist.");
-                return new BitmapImage();
+                //return new BitmapImage();
             }
             
             
@@ -113,6 +113,25 @@ namespace KaguyaReader
                 //Debug.WriteLine("Got cached thumb: " + fileToTest);
                 return bitmapImage;
             }
+        }
+    }
+
+    /// <summary>
+    /// Holds the information needed for the comic viewer and nothing else.
+    /// This should probably be renamed.
+    /// </summary>
+    public struct SimpleMangaData
+    {
+        public string Path;
+        public string Title;
+        public string ChapterTitle;
+        //public int Chapter;
+        public SimpleMangaData(string path, string title, string chapter)
+        {
+            Path = path;
+            Title = title;
+            ChapterTitle = chapter;
+            //Chapter = chapter;
         }
     }
 

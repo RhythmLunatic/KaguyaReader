@@ -73,7 +73,7 @@ namespace KaguyaReader
             Frame rootFrame = Window.Current.Content as Frame;
 
             // Navigate to the next page, with info in the parameters whether to enable the title bar UI or not.
-            rootFrame.Navigate(typeof(BlankPage1));
+            rootFrame.Navigate(typeof(ComicView));
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
