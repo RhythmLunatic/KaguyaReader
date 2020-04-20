@@ -24,9 +24,9 @@ namespace KaguyaReader
     public struct ChapterListing
     {
         public string Name;
-        public string Path;
+        public StorageFile Path;
 
-        public ChapterListing(string name, string path)
+        public ChapterListing(string name, StorageFile path)
         {
             Name = name;
             Path = path;
@@ -51,19 +51,21 @@ namespace KaguyaReader
             if (thisManga.Image != null)
                 CoverImage.Source = thisManga.Image;
         }
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
             thisManga = (BrowsableManga)e.Parameter;
-            var directory = thisManga.path;
+            //var directory = thisManga.path;
             //string mangaName = Path.GetDirectoryName(directory);
             Header.Text = thisManga.title;
             //Cover.Source = thisManga.imagePath;
 
             updateCover();
-            foreach (var file in Directory.EnumerateFiles(directory).Where(s => MangaUtils.ValidComicFileTypes.Contains(Path.GetExtension(s).ToLowerInvariant())))
+            var folder = await StorageFolder.GetFolderFromPathAsync(thisManga.path);
+            var files = await folder.GetFilesAsync(Windows.Storage.Search.CommonFileQuery.OrderByName);
+            foreach (var file in files.Where(s => MangaUtils.ValidComicFileTypes.Contains(s.FileType.ToLowerInvariant())))
             {
-                chapterList.Add(new ChapterListing(Path.GetFileNameWithoutExtension(file).Replace(thisManga.title + " ", ""), file));
+                chapterList.Add(new ChapterListing(file.DisplayName.Replace(thisManga.title + " ", ""), file));
             }
             Listing.ItemsSource = chapterList;
         }

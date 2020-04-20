@@ -16,9 +16,10 @@ using Windows.UI.Xaml.Media.Imaging;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using System.ComponentModel;
-using System.IO;
 using System.IO.Compression;
 using Windows.Storage.Streams;
+using Windows.Storage;
+using Windows.UI.ViewManagement;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -74,6 +75,9 @@ namespace KaguyaReader
     {
         //public event PropertyChangedEventHandler PropertyChanged;
 
+        // What is the program's last known full-screen state?
+        // We use this to detect when the system forced us out of full-screen mode.
+        private bool isLastKnownFullScreen = ApplicationView.GetForCurrentView().IsFullScreenMode;
 
         ObservableCollection<MangaImage> ImageCollection = new ObservableCollection<MangaImage>();
         //string fileToOpen;
@@ -110,20 +114,25 @@ namespace KaguyaReader
         public ComicView()
         {
             this.InitializeComponent();
+            //Unsubscribe from the toggled event, set toggle, then resubscribe
+            FullscreenToggle.Toggled -= FullscreenToggle_Toggled;
+            FullscreenToggle.IsOn = isLastKnownFullScreen;
+            FullscreenToggle.Toggled += FullscreenToggle_Toggled;
             //loadTestImages();
             //MangaCVS.Source = ImageCollection;
             //flipView.ItemsSource = ImageCollection;
         }
 
-        private async void loadFromCBZ(string fileToOpen)
+        private async void loadFromCBZ(StorageFile fileToOpen)
         {
-            using (FileStream zipToOpen = new FileStream(fileToOpen, FileMode.Open))
+            using (IRandomAccessStream fileStream = await fileToOpen.OpenAsync(FileAccessMode.Read))
             {
 
-                using (ZipArchive cbz = new ZipArchive(zipToOpen, ZipArchiveMode.Read))
+                using (ZipArchive cbz = new ZipArchive(fileStream.AsStream(), ZipArchiveMode.Read))
                 {
                     //What absolute GENIUS includes an xml in a cbz?
-                    var entries = cbz.Entries.Where(s => (s.Name.EndsWith(".jpg") || s.Name.EndsWith(".png") || s.Name.EndsWith(".jpeg"))).OrderBy(e => e.Name);
+                    var entries = cbz.Entries.Where(s => MangaUtils.ValidImageTypes.Contains(Path.GetExtension(s.Name))).OrderBy(e => e.Name);
+                    //This is obviously a bad idea since the manga reader will eat all the memory and crash
                     foreach (var entry in entries)
                     {
                         //TODO: Async it
@@ -149,8 +158,6 @@ namespace KaguyaReader
                         }
                     }
                 }
-                    
-
             }
         }
 
@@ -170,11 +177,11 @@ namespace KaguyaReader
 
             if (true)
             {
-                MangaUtils.ComicTypes fileType = MangaUtils.getTypeFromExtension(Path.GetExtension(data.Path).ToLowerInvariant());
+                MangaUtils.ComicTypes fileType = MangaUtils.getTypeFromExtension(data.File.FileType.ToLowerInvariant());
                 switch (fileType)
                 {
                     case MangaUtils.ComicTypes.ZIP:
-                        loadFromCBZ(data.Path);
+                        loadFromCBZ(data.File);
                         break;
                     default:
                         break;
@@ -216,6 +223,31 @@ namespace KaguyaReader
         private void NavigationView_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
         {
             On_BackRequested();
+        }
+
+        private void FullscreenToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            var view = ApplicationView.GetForCurrentView();
+            if (view.IsFullScreenMode)
+            {
+                view.ExitFullScreenMode();
+                //rootPage.NotifyUser("Exiting full screen mode", NotifyType.StatusMessage);
+                isLastKnownFullScreen = false;
+                // The SizeChanged event will be raised when the exit from full screen mode is complete.
+            }
+            else
+            {
+                if (view.TryEnterFullScreenMode())
+                {
+                    //rootPage.NotifyUser("Entering full screen mode", NotifyType.StatusMessage);
+                    isLastKnownFullScreen = true;
+                    // The SizeChanged event will be raised when the entry to full screen mode is complete.
+                }
+                else
+                {
+                    //rootPage.NotifyUser("Failed to enter full screen mode", NotifyType.ErrorMessage);
+                }
+            }
         }
     }
 }

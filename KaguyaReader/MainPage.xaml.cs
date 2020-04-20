@@ -121,6 +121,14 @@ namespace KaguyaReader
             openPicker.FileTypeFilter.Add(".rar");
             openPicker.FileTypeFilter.Add(".7z");
             StorageFile file = await openPicker.PickSingleFileAsync();
+            if (file != null)
+            {
+                //Needed for the "Open last manga" feature to work correctly
+                Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(file);
+                Frame rootFrame = Window.Current.Content as Frame;
+                //var n = ;
+                rootFrame.Navigate(typeof(ComicView), new SimpleMangaData(file, file.DisplayName, ""));
+            }
         }
 
         private void MainMenu_Tapped(object sender, TappedRoutedEventArgs e)

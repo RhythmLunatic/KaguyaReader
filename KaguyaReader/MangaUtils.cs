@@ -19,7 +19,8 @@ namespace KaguyaReader
         }
 
         public static List<String> ValidComicFileTypes = new List<string> { ".cbz", ".cbr", ".cb7", ".zip", ".rar", ".7z" };
-        
+        public static List<String> ValidImageTypes = new List<string> { ".jpg", ".jpeg", ".png", ".bmp" };
+
         //inb4 some dude gets mad because I checked the extension instead of the actual file signature
         //I probably should check the file sig instead of the extension though
         public static ComicTypes getTypeFromExtension(string extension)
@@ -89,6 +90,7 @@ namespace KaguyaReader
             }
         }
 
+        //As in the assets folder
         public static async Task<BitmapImage> LoadImageFromAssets(string fileName)
         {
             StorageFile file;
@@ -122,13 +124,13 @@ namespace KaguyaReader
     /// </summary>
     public struct SimpleMangaData
     {
-        public string Path;
+        public StorageFile File;
         public string Title;
         public string ChapterTitle;
         //public int Chapter;
-        public SimpleMangaData(string path, string title, string chapter)
+        public SimpleMangaData(StorageFile path, string title, string chapter)
         {
-            Path = path;
+            File = path;
             Title = title;
             ChapterTitle = chapter;
             //Chapter = chapter;

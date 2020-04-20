@@ -43,7 +43,37 @@
                 <StackPanel>
                     <CommandBar ClosedDisplayMode="Compact" OverflowButtonVisibility="Collapsed" Background="{x:Null}">
                         <AppBarButton Label="Brightness" Icon="View" Click="AppBarButton_Click"></AppBarButton>
-                        <AppBarButton Label="Settings" Icon="Setting"></AppBarButton>
+                        <AppBarButton Label="Settings" Icon="Setting">
+                            <AppBarButton.Flyout>
+                                <Flyout>
+                                    <StackPanel>
+
+                                        <TextBlock Text="Viewer for this series"></TextBlock>
+                                        <ComboBox PlaceholderText="Default" >
+                                            <x:String>Default</x:String>
+                                            <x:String>Left to right</x:String>
+                                            <x:String>right to left</x:String>
+                                            <x:String>Vertical</x:String>
+                                            <x:String>Webtoon</x:String>
+                                        </ComboBox>
+                                        <TextBlock Text="Rotation" ></TextBlock>
+                                        <ComboBox>
+                                            <x:String>Controlled by OS</x:String>
+                                            <x:String>Force portrait</x:String>
+                                            <x:String>Force landscape</x:String>
+                                        </ComboBox>
+                                        <TextBlock Text="Background color" ></TextBlock>
+                                        <ComboBox >
+                                            <x:String>Black</x:String>
+                                            <x:String>White</x:String>
+                                            <x:String>Automatic</x:String>
+                                        </ComboBox>
+                                        <TextBlock Text="Fullscreen"></TextBlock>
+                                        <ToggleSwitch x:Name="FullscreenToggle" Toggled="FullscreenToggle_Toggled" />
+                                    </StackPanel>
+                                </Flyout>
+                            </AppBarButton.Flyout>
+                        </AppBarButton>
                     </CommandBar>
                 </StackPanel>
             </NavigationView.PaneFooter>
