@@ -18,6 +18,8 @@
                 <Image x:Name="image" Source="{x:Bind Image, Mode=OneWay}"/>
             </ScrollViewer>
         </DataTemplate>
+
+        <SolidColorBrush x:Name="translucentBackgroundBrush" Opacity="0.5" Color="{ThemeResource SystemChromeMediumColor}"/>
     </Page.Resources>
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
@@ -25,15 +27,82 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        <CommandBar 
+            Background="#7F000000" 
+            x:Name="TopBar" 
+            ClosedDisplayMode="Compact" 
+            VerticalAlignment="Top" 
+            ScrollViewer.VerticalScrollBarVisibility="Auto" 
+            VerticalContentAlignment="Top" 
+            HorizontalContentAlignment="Stretch"
+            Visibility="Visible" 
+            IsOpen="True" 
+            OverflowButtonVisibility="Collapsed" 
+            Grid.RowSpan="1"
+            Canvas.ZIndex="1"
+            >
+            <CommandBar.Content>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" Height="40">
+                        <Border Grid.Row="0">
+                            <Button VerticalAlignment="Stretch" Foreground="{ThemeResource ApplicationForegroundThemeBrush}" Tapped="NavigationView_BackRequested" >
+                                <Button.Content>
+                                    <FontIcon x:Name="BackButton" FontFamily="Segoe MDL2 Assets" Glyph="&#xE72B;"/>
+                                </Button.Content>
+                            </Button>
+                        </Border>
+                        <RichTextBlock Margin="10,0,0,0">
+                            <Paragraph FontSize="16" FontWeight="Bold" x:Name="mainHeading" Foreground="White" ></Paragraph>
+                            <Paragraph FontSize="11" x:Name="subHeading" Foreground="White"></Paragraph>
+                        </RichTextBlock>
 
-        
-        <!--<CommandBar x:Name="TopBar" ClosedDisplayMode="Compact" VerticalAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2" Content="Example Name Here" VerticalContentAlignment="Top" Visibility="Visible" IsOpen="True">
-            <AppBarButton Icon="View" VerticalAlignment="Stretch" />
-        </CommandBar>-->
-        <NavigationView PaneDisplayMode="Top" IsBackEnabled="True" IsSettingsVisible="False" BackRequested="NavigationView_BackRequested">
+                    </StackPanel>
+
+                </Grid>
+            </CommandBar.Content>
+            <AppBarButton Label="Brightness" Icon="View" Click="AppBarButton_Click"></AppBarButton>
+            <AppBarButton Label="Toggle Fullscreen" Icon="FullScreen" Click="FullscreenToggle_Toggled"/>
+            <AppBarButton Label="Settings" Icon="Setting">
+                <AppBarButton.Flyout>
+                    <Flyout>
+                        <StackPanel>
+
+                            <TextBlock Text="Viewer for this series"></TextBlock>
+                            <ComboBox PlaceholderText="Default" >
+                                <x:String>Default</x:String>
+                                <x:String>Left to right</x:String>
+                                <x:String>right to left</x:String>
+                                <x:String>Vertical</x:String>
+                                <x:String>Webtoon</x:String>
+                            </ComboBox>
+                            <TextBlock Text="Rotation" ></TextBlock>
+                            <ComboBox>
+                                <x:String>Controlled by OS</x:String>
+                                <x:String>Force portrait</x:String>
+                                <x:String>Force landscape</x:String>
+                            </ComboBox>
+                            <TextBlock Text="Background color" ></TextBlock>
+                            <ComboBox >
+                                <x:String>Black</x:String>
+                                <x:String>White</x:String>
+                                <x:String>Automatic</x:String>
+                            </ComboBox>
+                            <TextBlock Text="Fullscreen"></TextBlock>
+                            <ToggleSwitch x:Name="FullscreenToggle" Toggled="FullscreenToggle_Toggled" />
+                        </StackPanel>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+
+        </CommandBar>
+
+
+        <!--<NavigationView PaneDisplayMode="Top" IsBackEnabled="True" IsSettingsVisible="False" BackRequested="NavigationView_BackRequested">
             <NavigationView.MenuItems>
-                <!--<TextBlock Text="Your cbz name here"/>
-                <NavigationViewItem Content="Your cbz name here"></NavigationViewItem>-->
                 <RichTextBlock>
                     <Paragraph FontSize="16" FontWeight="Bold" x:Name="mainHeading"></Paragraph>
                     <Paragraph FontSize="11" x:Name="subHeading"></Paragraph>
@@ -77,24 +146,21 @@
                     </CommandBar>
                 </StackPanel>
             </NavigationView.PaneFooter>
-        </NavigationView>
+        </NavigationView>-->
         <FlipView
             Tapped="image_Tapped" 
-            Grid.Row="1" 
+            Grid.Row="0" 
+            Grid.RowSpan="3"
+            
             ItemsSource="{x:Bind MangaCVS.View}"
             ItemTemplate="{x:Bind flipViewData}"
             x:Name="flipView">
-
-            <!--<Image x:Name="image2" Source="/Assets/test/02.jpg"/>
-            <Image x:Name="image3" Source="/Assets/test/03.jpg"/>
-            <Image x:Name="image4" Source="/Assets/test/04.jpg"/>
-            <Image x:Name="image5" Source="/Assets/test/05.jpg"/>
-            <Image x:Name="image6" Source="/Assets/test/06.jpg"/>-->
         </FlipView>
         <CommandBar x:Name="BottomBar" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Grid.Row="5" Width="1494">
             <CommandBar.Content>
                 <StackPanel Orientation="Horizontal">
-                    <Slider Width="500" Value="{Binding SelectedIndex, ElementName=flipView}"></Slider>
+                    <!--Maximum="{Binding Count, ElementName=ImageCollection}"-->
+                    <Slider Width="500" Value="{Binding SelectedIndex, ElementName=flipView}"  x:Name="Slider"></Slider>
                 </StackPanel>
             </CommandBar.Content>
             <AppBarButton Icon="Accept" Label="AppBarButton"/>

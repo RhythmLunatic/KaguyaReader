@@ -20,6 +20,7 @@ using System.IO.Compression;
 using Windows.Storage.Streams;
 using Windows.Storage;
 using Windows.UI.ViewManagement;
+using System.Threading.Tasks;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -101,7 +102,7 @@ namespace KaguyaReader
             set { SetProperty(ref _items, value); }
         }*/
 
-        private async void loadTestImages()
+        /*private async void loadTestImages()
         {
             //MangaImage img = new MangaImage(await MangaUtils.LoadImageFromAssets(@"Assets\test\01.jpg"));
             //ImageCollection.Add(img);
@@ -110,7 +111,7 @@ namespace KaguyaReader
                 ImageCollection.Add(new MangaImage(await MangaUtils.LoadImageFromAssets(@"Assets\test\0" + i.ToString() + ".jpg")));
             
             //Items = mangaImages;
-        }
+        }*/
         public ComicView()
         {
             this.InitializeComponent();
@@ -123,7 +124,7 @@ namespace KaguyaReader
             //flipView.ItemsSource = ImageCollection;
         }
 
-        private async void loadFromCBZ(StorageFile fileToOpen)
+        private async Task<int> loadFromCBZ(StorageFile fileToOpen)
         {
             using (IRandomAccessStream fileStream = await fileToOpen.OpenAsync(FileAccessMode.Read))
             {
@@ -159,9 +160,18 @@ namespace KaguyaReader
                     }
                 }
             }
+            //TODO: DON'T DO THIS, THIS IS A TERRIBLE IDEA
+            //Slider.Maximum = ImageCollection.Count()-1;
+            return ImageCollection.Count();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        //I couldn't figure out how to assign 0 by default
+        private async Task<int> unimplementedTask()
+        {
+            return 0;
+        }
+
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
             //string fileToOpen = (String)e.Parameter;
@@ -175,24 +185,22 @@ namespace KaguyaReader
             text2.Text = data.ChapterTitle;
             subHeading.Inlines.Add(text2);
 
-            if (true)
+            MangaUtils.ComicTypes fileType = MangaUtils.getTypeFromExtension(data.File.FileType.ToLowerInvariant());
+            Task<int> count;
+            switch (fileType)
             {
-                MangaUtils.ComicTypes fileType = MangaUtils.getTypeFromExtension(data.File.FileType.ToLowerInvariant());
-                switch (fileType)
-                {
-                    case MangaUtils.ComicTypes.ZIP:
-                        loadFromCBZ(data.File);
-                        break;
-                    default:
-                        break;
-                }
-            }
-            else
-            {
-                loadTestImages();
+                case MangaUtils.ComicTypes.ZIP:
+                    count = loadFromCBZ(data.File);
+                    break;
+                default:
+                    count = unimplementedTask();
+                    break;
             }
 
             MangaCVS.Source = ImageCollection;
+            Slider.Maximum = await count-1;
+            //Slider.Maximum = ImageCollection.Count();
+            System.Diagnostics.Debug.WriteLine(ImageCollection.Count() + " pages in comic.");
 
         }
 
@@ -225,6 +233,11 @@ namespace KaguyaReader
             On_BackRequested();
         }
 
+        private void NavigationView_BackRequested(object sender, TappedRoutedEventArgs args)
+        {
+            On_BackRequested();
+        }
+
         private void FullscreenToggle_Toggled(object sender, RoutedEventArgs e)
         {
             var view = ApplicationView.GetForCurrentView();
@@ -248,6 +261,11 @@ namespace KaguyaReader
                     //rootPage.NotifyUser("Failed to enter full screen mode", NotifyType.ErrorMessage);
                 }
             }
+        }
+
+        private void Button_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
         }
     }
 }

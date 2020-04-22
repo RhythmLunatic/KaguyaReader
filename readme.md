@@ -24,3 +24,6 @@ On a PC:
 On a Phone:
 
 ???
+
+# License
+GPLv3, read LICENSE for information.

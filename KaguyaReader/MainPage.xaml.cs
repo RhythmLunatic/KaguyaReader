@@ -68,12 +68,13 @@ namespace KaguyaReader
             adjustSize();
         }
 
-        private void button_Click_1(object sender, TappedRoutedEventArgs e)
+        private async void button_Click_1(object sender, TappedRoutedEventArgs e)
         {
             Frame rootFrame = Window.Current.Content as Frame;
 
             // Navigate to the next page, with info in the parameters whether to enable the title bar UI or not.
-            rootFrame.Navigate(typeof(ComicView));
+            var testManga = await MangaUtils.getFileFromAssets("test.cbz");
+            rootFrame.Navigate(typeof(ComicView), new SimpleMangaData(testManga, "Test Comic", "Test Chapter"));
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

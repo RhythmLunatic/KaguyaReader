@@ -9,13 +9,13 @@
   <Identity
     Name="d200c33d-0762-4899-92a6-a764b79ba83d"
     Publisher="CN=RhythmLunatic"
-    Version="1.0.0.0" />
+    Version="0.1.7.0" />
 
   <mp:PhoneIdentity PhoneProductId="d200c33d-0762-4899-92a6-a764b79ba83d" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>KaguyaReader</DisplayName>
-    <PublisherDisplayName>RhythmLunatic</PublisherDisplayName>
+    <PublisherDisplayName>Rhythm Lunatic</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -35,7 +35,7 @@
         DisplayName="KaguyaReader"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="KaguyaReader"
+        Description="Barely functional manga and comic viewer"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
@@ -45,10 +45,23 @@
           <uap:Rotation Preference="landscapeFlipped"/>
           <uap:Rotation Preference="portraitFlipped"/></uap:InitialRotationPreference>
       </uap:VisualElements>
+      <Extensions>
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="supportedtypes">
+            <uap:SupportedFileTypes>
+              <uap:FileType>.cbz</uap:FileType>
+              <uap:FileType>.cbr</uap:FileType>
+              <uap:FileType>.cb7</uap:FileType>
+            </uap:SupportedFileTypes>
+            <uap:EditFlags OpenIsSafe="true"/>
+          </uap:FileTypeAssociation>
+        </uap:Extension>
+      </Extensions>
     </Application>
   </Applications>
 
   <Capabilities>
     <Capability Name="internetClient" />
+    <uap:Capability Name="removableStorage"/>
   </Capabilities>
 </Package>

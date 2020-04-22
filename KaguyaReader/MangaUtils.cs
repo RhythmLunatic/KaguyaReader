@@ -116,6 +116,21 @@ namespace KaguyaReader
                 return bitmapImage;
             }
         }
+
+        public static async Task<StorageFile> getFileFromAssets(string fileName)
+        {
+            StorageFile file;
+            try
+            {
+                file = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFileAsync(@"Assets\"+fileName);
+            }
+            catch
+            {
+                throw new Exception("The file " + fileName + " doesn't exist.");
+                //return new BitmapImage();
+            }
+            return file;
+        }
     }
 
     /// <summary>
