@@ -13,7 +13,7 @@
         <DataTemplate x:DataType="local:MangaImage" x:Name="flipViewData">
 
             <!--<Image x:Name="image" Width="400" Source="{x:Bind Image, Mode=OneWay}"/>-->
-            <ScrollViewer ZoomMode="Enabled" HorizontalAlignment="Center" VerticalAlignment="Center" MinZoomFactor="0.5">
+            <ScrollViewer ZoomMode="Enabled" HorizontalAlignment="Center" VerticalAlignment="Center" MinZoomFactor="0.5" MaxZoomFactor="2">
 
                 <Image x:Name="image" Source="{x:Bind Image, Mode=OneWay}"/>
             </ScrollViewer>
@@ -51,7 +51,7 @@
                         <Border Grid.Row="0">
                             <Button VerticalAlignment="Stretch" Foreground="{ThemeResource ApplicationForegroundThemeBrush}" Tapped="NavigationView_BackRequested" >
                                 <Button.Content>
-                                    <FontIcon x:Name="BackButton" FontFamily="Segoe MDL2 Assets" Glyph="&#xE72B;"/>
+                                    <FontIcon x:Name="BackButton" FontFamily="Segoe MDL2 Assets" Glyph="&#xE72B;" Foreground="White"/>
                                 </Button.Content>
                             </Button>
                         </Border>
@@ -64,9 +64,9 @@
 
                 </Grid>
             </CommandBar.Content>
-            <AppBarButton Label="Brightness" Icon="View" Click="AppBarButton_Click"></AppBarButton>
-            <AppBarButton Label="Toggle Fullscreen" Icon="FullScreen" Click="FullscreenToggle_Toggled"/>
-            <AppBarButton Label="Settings" Icon="Setting">
+            <AppBarButton Label="Brightness" Icon="View" Click="AppBarButton_Click" Foreground="White"></AppBarButton>
+            <AppBarButton Label="Toggle Fullscreen" Icon="FullScreen" Click="FullscreenToggle_Toggled" Foreground="White"/>
+            <AppBarButton Label="Settings" Icon="Setting" Foreground="White">
                 <AppBarButton.Flyout>
                     <Flyout>
                         <StackPanel>
@@ -78,6 +78,13 @@
                                 <x:String>right to left</x:String>
                                 <x:String>Vertical</x:String>
                                 <x:String>Webtoon</x:String>
+                            </ComboBox>
+                            <TextBlock Text="Fit by" ></TextBlock>
+                            <ComboBox PlaceholderText="Both">
+                                <x:String>Width</x:String>
+                                <x:String>Height</x:String>
+                                <x:String>Both</x:String>
+                                <x:String>None (display at original resolution)</x:String>
                             </ComboBox>
                             <TextBlock Text="Rotation" ></TextBlock>
                             <ComboBox>
@@ -93,6 +100,9 @@
                             </ComboBox>
                             <TextBlock Text="Fullscreen"></TextBlock>
                             <ToggleSwitch x:Name="FullscreenToggle" Toggled="FullscreenToggle_Toggled" />
+
+                            <TextBlock Text="Dual Pane in landscape"></TextBlock>
+                            <ToggleSwitch/>
                         </StackPanel>
                     </Flyout>
                 </AppBarButton.Flyout>
@@ -156,11 +166,14 @@
             ItemTemplate="{x:Bind flipViewData}"
             x:Name="flipView">
         </FlipView>
-        <CommandBar x:Name="BottomBar" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Grid.Row="5" Width="1494">
+        <CommandBar x:Name="BottomBar"
+                    
+            Background="#7F000000" 
+                    VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Grid.Row="5" Width="1494" Canvas.ZIndex="1">
             <CommandBar.Content>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                     <!--Maximum="{Binding Count, ElementName=ImageCollection}"-->
-                    <Slider Width="500" Value="{Binding SelectedIndex, ElementName=flipView}"  x:Name="Slider"></Slider>
+                    <Slider Value="{Binding SelectedIndex, ElementName=flipView}"  x:Name="Slider" Margin="15,0,0,0" TickFrequency="1" Width="200"></Slider>
                 </StackPanel>
             </CommandBar.Content>
             <AppBarButton Icon="Accept" Label="AppBarButton"/>

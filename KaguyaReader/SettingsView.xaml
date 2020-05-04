@@ -9,7 +9,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <NavigationView PaneDisplayMode="Top" IsBackButtonVisible="Collapsed" Content="" IsSettingsVisible="False">
+        <NavigationView PaneDisplayMode="Top" IsBackButtonVisible="Collapsed" IsSettingsVisible="False">
             <NavigationView.MenuItems>
                 <NavigationViewItem  Content="General" Icon="List" />
                 <NavigationViewItem Content="Reader" Icon="Library" />
@@ -18,7 +18,7 @@
                 <NavigationViewItem Content="Backup" Icon="SaveLocal"></NavigationViewItem>
                 <NavigationViewItem Content="Advanced" Icon="Admin"></NavigationViewItem>
                 <NavigationViewItem Content="About" Icon="Important"/>
-                <NavigationViewItem Content="Usage" Icon="Help"></NavigationViewItem>
+                <NavigationViewItem Content="Usage" Icon="Help" Tapped="NavigationViewItem_Tapped"></NavigationViewItem>
             </NavigationView.MenuItems>
             <!--<NavigationView.PaneFooter>
                 <StackPanel>
@@ -28,6 +28,7 @@
                     </CommandBar>
                 </StackPanel>
             </NavigationView.PaneFooter>-->
+            <Frame x:Name="SettingsFrame"></Frame>
         </NavigationView>
         <!--<CommandBar>
             <AppBarButton  Content="General" Icon="List" />
@@ -39,7 +40,6 @@
             <AppBarButton Content="About" Icon="Important"/>
 
         </CommandBar>-->
-        <Frame x:Name="SettingsFrame"></Frame>
 
     </Grid>
 </Page>

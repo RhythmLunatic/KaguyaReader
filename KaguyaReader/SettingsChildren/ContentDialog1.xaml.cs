@@ -13,23 +13,23 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
+// The Content Dialog item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
-namespace KaguyaReader
+namespace KaguyaReader.SettingsChildren
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public sealed partial class SettingsView : Page
+    public sealed partial class ContentDialog1 : ContentDialog
     {
-        public SettingsView()
+        public ContentDialog1()
         {
             this.InitializeComponent();
         }
 
-        private void NavigationViewItem_Tapped(object sender, TappedRoutedEventArgs e)
+        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            SettingsFrame.Navigate(typeof(SettingsChildren.AboutPage),SettingsFrame);
+        }
+
+        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        {
         }
     }
 }

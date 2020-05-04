@@ -15,16 +15,30 @@ using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
-namespace KaguyaReader
+namespace KaguyaReader.SettingsChildren
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class AboutView : Page
+    public sealed partial class AboutPage : Page
     {
-        public AboutView()
+        Frame curFrame;
+        public AboutPage()
         {
             this.InitializeComponent();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            curFrame = (Frame)e.Parameter;
+
+        }
+
+        private void HyperlinkButton_Click(object sender, RoutedEventArgs e)
+        {
+            
+            curFrame.Navigate(typeof(License));
         }
     }
 }

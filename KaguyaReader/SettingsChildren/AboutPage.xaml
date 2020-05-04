@@ -1,0 +1,18 @@
+﻿<Page
+    x:Class="KaguyaReader.SettingsChildren.AboutPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:KaguyaReader.SettingsChildren"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <TextBlock x:Name="textBlock" HorizontalAlignment="Center" Margin="0,500,0,0" Text="Written by Rhythm Lunatic" TextWrapping="Wrap" VerticalAlignment="Top" Style="{StaticResource HeaderTextBlockStyle}"/>
+
+        <HyperlinkButton Content="Source Code" Margin="0,561,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" NavigateUri="https://github.com/RhythmLunatic/KaguyaReader"/>
+        <HyperlinkButton Content="Read the GPLv3 licence" HorizontalAlignment="Center" Margin="0,593,0,0" VerticalAlignment="Top" Click="HyperlinkButton_Click"></HyperlinkButton>
+
+    </Grid>
+</Page>
