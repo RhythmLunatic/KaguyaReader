@@ -164,7 +164,21 @@
             
             ItemsSource="{x:Bind MangaCVS.View}"
             ItemTemplate="{x:Bind flipViewData}"
-            x:Name="flipView">
+            x:Name="flipView" RightTapped="flipView_RightTapped">
+            <FlipView.ItemContainerStyle>
+                <Style TargetType="FlipViewItem">
+                    <!-- The ContextFlyout will be shown when the user requests a context menu. -->
+                    <Setter Property="ContextFlyout">
+                        <Setter.Value>
+                            <MenuFlyout x:Name="SharedFlyout">
+                                <MenuFlyoutItem Text="Set as cover"  />
+                                <MenuFlyoutItem Text="Share"  />
+                                <MenuFlyoutItem Text="Save" />
+                            </MenuFlyout>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </FlipView.ItemContainerStyle>
         </FlipView>
         <CommandBar x:Name="BottomBar"
                     

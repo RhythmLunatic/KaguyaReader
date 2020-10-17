@@ -21,11 +21,18 @@ using Windows.Storage.Streams;
 using Windows.Storage;
 using Windows.UI.ViewManagement;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Data;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using Windows.ApplicationModel.DataTransfer;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace KaguyaReader
 {
+    
+
     public class MangaImage : INotifyPropertyChanged
     {
 
@@ -115,6 +122,10 @@ namespace KaguyaReader
         public ComicView()
         {
             this.InitializeComponent();
+
+            //Set up the share dialog
+            DataTransferManager dataTransferManager = DataTransferManager.GetForCurrentView();
+            dataTransferManager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(this.DataRequested);
             //Unsubscribe from the toggled event, set toggle, then resubscribe
             FullscreenToggle.Toggled -= FullscreenToggle_Toggled;
             FullscreenToggle.IsOn = isLastKnownFullScreen;
@@ -146,6 +157,7 @@ namespace KaguyaReader
                          */
                         using (Stream stream = entry.Open())
                         {
+                            //As you can guess, this isn't a good idea because it's loading everything at once
                             var memStream = new MemoryStream();
                             await stream.CopyToAsync(memStream);
                             memStream.Position = 0;
@@ -206,7 +218,16 @@ namespace KaguyaReader
 
         private void image_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            //TopBar.Visibility = Visibility.Visible;
+            if (TopBar.Visibility == Visibility.Visible)
+            {
+                TopBar.Visibility = Visibility.Collapsed;
+                BottomBar.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                TopBar.Visibility = Visibility.Visible;
+                BottomBar.Visibility = Visibility.Visible;
+            }
         }
 
 
@@ -223,6 +244,8 @@ namespace KaguyaReader
         {
             if (this.Frame.CanGoBack)
             {
+                //Need to clear the loaded images from memory manually. Don't know why, it should be cleared when you assign a new image pool.
+                ImageCollection.Clear();
                 this.Frame.GoBack();
                 return true;
             }
@@ -266,6 +289,19 @@ namespace KaguyaReader
         private void Button_Tapped(object sender, TappedRoutedEventArgs e)
         {
 
+        }
+
+        private void flipView_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+
+        }
+
+        private void DataRequested(DataTransferManager sender, DataRequestedEventArgs e)
+        {
+            DataRequest request = e.Request;
+            request.Data.Properties.Title = "Share Text Example";
+            request.Data.Properties.Description = "An example of how to share text.";
+            request.Data.SetText("Hello World!");
         }
     }
 }

@@ -229,10 +229,34 @@ namespace KaguyaReader
             return new Manga("Test Manga", "Test Author", 1, 0, false, "None");
         }*/
 
-        //TODO: This needs to be changed to an async method. Scan each directory async so the window doesn't freeze.
-        public static ObservableCollection<BrowsableManga> GetMangas(string path)
+        public static BrowsableManga scanDirectory(string directory)
         {
-            ObservableCollection<BrowsableManga> mangas = new ObservableCollection<BrowsableManga>();
+
+            var filesInDir = Directory.EnumerateFiles(directory).Where(s => MangaUtils.ValidComicFileTypes.Contains(Path.GetExtension(s).ToLowerInvariant()));
+            //System.Diagnostics.Debug.WriteLine(filesInDir.ToList().Count);
+            if (filesInDir.Any())
+            {
+                //TODO: Check if cover.bmp exists?
+                if (File.Exists(Path.Combine(directory, "cover.png")))
+                {
+                    return new BrowsableManga(Path.GetFileNameWithoutExtension(directory), directory, BROWSABLE_TYPE.FOLDER_WITH_MANGA, Path.Combine(directory, "cover.png"));
+                }
+                else if (File.Exists(Path.Combine(directory, "cover.jpg")))
+                    return new BrowsableManga(Path.GetFileNameWithoutExtension(directory), directory, BROWSABLE_TYPE.FOLDER_WITH_MANGA, Path.Combine(directory, "cover.jpg"));
+                else
+                    return new BrowsableManga(Path.GetFileNameWithoutExtension(directory), directory, BROWSABLE_TYPE.FOLDER_WITH_MANGA);
+            }
+            else
+            {
+                return new BrowsableManga(Path.GetFileNameWithoutExtension(directory), directory, BROWSABLE_TYPE.FOLDER_NO_MANGA);
+            }
+        }
+
+        /*TODO: UWP (Actually WinForms in general) does not support adding to a collection async. So the only thing that can be done is either
+         * write your own implementation or do it in the background while showing a loading cursor and then add them all at once.
+         */
+        public static async void GetMangas(ObservableCollection<BrowsableManga> mangas, string path)
+        {
 
             //Filter only valid files
             /*
@@ -245,28 +269,15 @@ namespace KaguyaReader
                 mangas.Add(new BrowsableManga(Path.GetFileNameWithoutExtension(file), file, BROWSABLE_TYPE.SINGLE_FILE));
             }
             var directories = Directory.EnumerateDirectories(path);
+
             foreach (string directory in directories)
             {
-                var filesInDir = Directory.EnumerateFiles(directory).Where(s => MangaUtils.ValidComicFileTypes.Contains(Path.GetExtension(s).ToLowerInvariant()));
-                //System.Diagnostics.Debug.WriteLine(filesInDir.ToList().Count);
-                if (filesInDir.Any())
-                {
-                    //TODO: Check if cover.jpg/png/bmp exists
-                    if (File.Exists(Path.Combine(directory, "cover.png")))
-                    {
-                        mangas.Add(new BrowsableManga(Path.GetFileNameWithoutExtension(directory), directory, BROWSABLE_TYPE.FOLDER_WITH_MANGA, Path.Combine(directory, "cover.png")));
-                    }
-                    else if (File.Exists(Path.Combine(directory, "cover.jpg")))
-                        mangas.Add(new BrowsableManga(Path.GetFileNameWithoutExtension(directory), directory, BROWSABLE_TYPE.FOLDER_WITH_MANGA, Path.Combine(directory, "cover.jpg")));
-                    else
-                        mangas.Add(new BrowsableManga(Path.GetFileNameWithoutExtension(directory), directory, BROWSABLE_TYPE.FOLDER_WITH_MANGA));
-                }
-                else
-                {
-                    mangas.Add(new BrowsableManga(Path.GetFileNameWithoutExtension(directory), directory, BROWSABLE_TYPE.FOLDER_NO_MANGA));
-                }
+                mangas.Add(scanDirectory(directory));
             }
-            return mangas;
+            /*Parallel.ForEach(directories, directory =>
+             {
+                 mangas.Add(scanDirectory(directory));
+             });*/
 
         }
     }
@@ -291,8 +302,10 @@ namespace KaguyaReader
             Header.Text = currentCatalog.Name;
             if (currentCatalog.Type == CatalogType.LocalFoler)
             {
-                mangas = FolderHandler.GetMangas(currentCatalog.Path);
+
+                mangas = new ObservableCollection<BrowsableManga>();
                 MangaCVS.Source = mangas;
+                FolderHandler.GetMangas(mangas, currentCatalog.Path);
             }
         }
 
@@ -302,7 +315,8 @@ namespace KaguyaReader
 
         private async void MangaListing_Tapped(object sender, TappedRoutedEventArgs e)
         {
-
+            if (MangaListing.SelectedIndex == -1)
+                return;
             System.Diagnostics.Debug.WriteLine(mangas[MangaListing.SelectedIndex].title);
             var selectedManga = mangas[MangaListing.SelectedIndex];
             if (selectedManga.type == BROWSABLE_TYPE.FOLDER_WITH_MANGA)

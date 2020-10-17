@@ -29,8 +29,6 @@
         </DataTemplate>
         <MenuFlyout x:Key="SampleContextMenu">
             <MenuFlyoutItem Text="Add To Library"  />
-            <MenuFlyoutItem Text="Print" />
-            <MenuFlyoutItem Text="Delete" />
             <MenuFlyoutItem Text="Refresh Cover" Click="MenuFlyoutItem_Click" />
         </MenuFlyout>
     </Page.Resources>
@@ -86,7 +84,10 @@
             x:Name="MangaListing"
             ItemsSource="{x:Bind MangaCVS.View}" 
             ItemTemplate="{x:Bind MangaGridViewTemplate}"
-            Grid.Row="2" Margin="20,0,20,0" SelectionChanged="GridView_SelectionChanged" Tapped="MangaListing_Tapped" ContextRequested="MangaListing_ContextRequested"/>
-        
+            Grid.Row="2" Margin="20,0,20,0" SelectionChanged="GridView_SelectionChanged" Tapped="MangaListing_Tapped" ContextRequested="MangaListing_ContextRequested">
+            
+        </GridView>
+        <!--<ProgressBar Height="10" Width="100" IsIndeterminate="True" Grid.Row="2"/>-->
+        <ProgressRing Grid.Row="2" IsActive="True" Canvas.ZIndex="1" />
     </Grid>
 </Page>
