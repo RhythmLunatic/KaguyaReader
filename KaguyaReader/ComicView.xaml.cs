@@ -98,39 +98,57 @@ namespace KaguyaReader
             get { return _Index; } 
             set
             {
-                if (value > _Index)
+                /*if (value > _Index)
                     trueIndex++;
                 else if (value < _Index)
                     trueIndex--;
-                Debug.WriteLine("flipView pos "+value.ToString()+" | comic pos: "+trueIndex.ToString());
+                Debug.WriteLine("flipView pos "+value.ToString()+" | comic pos: "+trueIndex.ToString());*/
                 
                 //If < 0, the flipView has unloaded! Do not do anything, garbage collector will clean it
                 if (value < 0)
                 {
                     return;
                 }
-                else if (value > 2)
+                else if (value > _Index)
                 {
-                    if (trueIndex + 2 <= supplier.numEntries-1)
+                    if (value + 2 <= supplier.numEntries-1)
                     {
-                        Debug.WriteLine("Loading new image at idx " + (trueIndex + 2).ToString() +" and appending to back");
-                        ImageCollection.Add(supplier.getImageAtIdxSync(trueIndex + 2));
+
                         Debug.WriteLine("Unloading image at front now...");
-                        //ImageCollection.RemoveAt(0);
+                        //Because I can't remove from the pool, just do this...
+                        //It replaces the oldest image with the newest one so the oldest one gets removed from the memory pool
+                        if (value > 2)
+                            ImageCollection[value - 2] = ImageCollection[value];
+
+
+                        //TODO: Actually collection size should just be the same size as the number of pages in the manga
+                        if (value+2>ImageCollection.Count-1)
+                        {
+
+                            Debug.WriteLine("Loading new image at idx " + (value + 2).ToString() + " and appending to back");
+                            ImageCollection.Add(supplier.getImageAtIdxSync(value + 2));
+                            Debug.WriteLine("Collection size is now " + ImageCollection.Count.ToString());
+                        }
+                        else
+                        {
+                            Debug.WriteLine("Loading new image at idx " + (value + 2).ToString());
+                            ImageCollection[value + 2] = supplier.getImageAtIdxSync(value + 2);
+                        }
                     }
                     else
                     {
                         Debug.WriteLine("Already hit end? " + supplier.numEntries.ToString());
                     }
                 }
-                else if (value < 2 && trueIndex > 2)
+                else if (value < _Index)
                 {
-                    if (trueIndex - 2 >= 0)
+                    if (value - 2 >= 0)
                     {
-                        Debug.WriteLine("Loading new image at idx " + (trueIndex - 2).ToString() + " and appending to front");
-                        ImageCollection.Insert(0, supplier.getImageAtIdxSync(trueIndex - 2));
+                        Debug.WriteLine("Loading new image at idx " + (value - 2).ToString() + " and appending to front");
+                        ImageCollection[value-2] = supplier.getImageAtIdxSync(value - 2);
                         Debug.WriteLine("Unloading image at end now...");
-                        ImageCollection.RemoveAt(ImageCollection.Count - 1);
+                        if (value < supplier.numEntries + 1)
+                            ImageCollection[value + 2] = ImageCollection[value];
                     }
                 }
                 _Index = value;
