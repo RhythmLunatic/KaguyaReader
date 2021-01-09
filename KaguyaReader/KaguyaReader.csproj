@@ -137,6 +137,7 @@
     <Compile Include="CatalogView.xaml.cs">
       <DependentUpon>CatalogView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FiletypeSuppliers.cs" />
     <Compile Include="MangaUtils.cs" />
     <Compile Include="LibraryView.xaml.cs">
       <DependentUpon>LibraryView.xaml</DependentUpon>

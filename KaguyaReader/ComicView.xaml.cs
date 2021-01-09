@@ -21,8 +21,6 @@ using Windows.Storage.Streams;
 using Windows.Storage;
 using Windows.UI.ViewManagement;
 using System.Threading.Tasks;
-using Windows.UI.Xaml.Data;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using Windows.ApplicationModel.DataTransfer;
@@ -76,6 +74,8 @@ namespace KaguyaReader
             //ImagePath = @"/Assets/test/02.jpg";
         }
     }
+
+
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
@@ -88,6 +88,45 @@ namespace KaguyaReader
         private bool isLastKnownFullScreen = ApplicationView.GetForCurrentView().IsFullScreenMode;
 
         ObservableCollection<MangaImage> ImageCollection = new ObservableCollection<MangaImage>();
+        OnDemandCbzSupplier supplier = new OnDemandCbzSupplier();
+
+        //Actual position in the cbz
+        int trueIndex = 0;
+        //Position in the flipView
+        int _Index = default(int);
+        public int Index { 
+            get { return _Index; } 
+            set
+            {
+                if (value > _Index)
+                    trueIndex++;
+                else if (value < _Index)
+                    trueIndex--;
+                Debug.WriteLine("flipView pos "+value.ToString()+" | comic pos: "+trueIndex.ToString());
+                
+                if (value > 2)
+                {
+                    if (trueIndex + 2 <= supplier.numEntries-1)
+                    {
+                        Debug.WriteLine("Loading new image at idx " + (trueIndex + 2).ToString());
+                        ImageCollection.Add(supplier.getImageAtIdx(trueIndex + 2).Result);
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Already hit end? " + supplier.numEntries.ToString());
+                    }
+                }
+                else if (value < 2 && trueIndex > 2)
+                {
+                    if (trueIndex - 2 >= 0)
+                    {
+                        ImageCollection.Insert(0, supplier.getImageAtIdx(trueIndex - 2).Result);
+                    }
+                }
+                _Index = value;
+            }
+        }
+
         //string fileToOpen;
         //private IEnumerable<MangaImage> _items;
 
@@ -135,46 +174,16 @@ namespace KaguyaReader
             //flipView.ItemsSource = ImageCollection;
         }
 
+        //TODO: Oh boy I love side effects
+        //This function should be removed and the supplier opening more explicit
         private async Task<int> loadFromCBZ(StorageFile fileToOpen)
         {
-            using (IRandomAccessStream fileStream = await fileToOpen.OpenAsync(FileAccessMode.Read))
+            if (await supplier.openFile(fileToOpen))
             {
-
-                using (ZipArchive cbz = new ZipArchive(fileStream.AsStream(), ZipArchiveMode.Read))
-                {
-                    //What absolute GENIUS includes an xml in a cbz?
-                    var entries = cbz.Entries.Where(s => MangaUtils.ValidImageTypes.Contains(Path.GetExtension(s.Name))).OrderBy(e => e.Name);
-                    //This is obviously a bad idea since the manga reader will eat all the memory and crash
-                    foreach (var entry in entries)
-                    {
-                        //TODO: Async it
-                        /*
-                            using (Stream zipStream = entry.Open())
-                            using (FileStream fileStream = new FileStream(...))
-                            {
-                                await zipStream.CopyToAsync(fileStream);
-                            }
-                         */
-                        using (Stream stream = entry.Open())
-                        {
-                            //As you can guess, this isn't a good idea because it's loading everything at once
-                            var memStream = new MemoryStream();
-                            await stream.CopyToAsync(memStream);
-                            memStream.Position = 0;
-                            var bitmap = new BitmapImage();
-                            bitmap.SetSource(memStream.AsRandomAccessStream());
-                            //image.Source = bitmap;
-                            //Stream fileStream = entry.Open();
-                            //BitmapImage image = new BitmapImage();
-                            //image.SetSource(stream);
-                            ImageCollection.Add(new MangaImage(bitmap));
-                        }
-                    }
-                }
+                return supplier.numEntries;
             }
-            //TODO: DON'T DO THIS, THIS IS A TERRIBLE IDEA
-            //Slider.Maximum = ImageCollection.Count()-1;
-            return ImageCollection.Count();
+            throw new System.IO.IOException("Failed to open CBZ.");
+            return 0;
         }
 
         //I couldn't figure out how to assign 0 by default
@@ -210,9 +219,15 @@ namespace KaguyaReader
             }
 
             MangaCVS.Source = ImageCollection;
-            Slider.Maximum = await count-1;
+            Slider.Maximum = await count - 1;
             //Slider.Maximum = ImageCollection.Count();
-            System.Diagnostics.Debug.WriteLine(ImageCollection.Count() + " pages in comic.");
+            Debug.WriteLine(count + " pages in comic.");
+
+            Debug.WriteLine("Loading first 5 pages on demand...");
+            for (int i = 0; i < Math.Min(count.Result, 5); i++)
+            {
+                ImageCollection.Add(await supplier.getImageAtIdx(i));
+            }
 
         }
 
@@ -293,7 +308,6 @@ namespace KaguyaReader
 
         private void flipView_RightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-
         }
 
         private void DataRequested(DataTransferManager sender, DataRequestedEventArgs e)
@@ -302,6 +316,12 @@ namespace KaguyaReader
             request.Data.Properties.Title = "Share Text Example";
             request.Data.Properties.Description = "An example of how to share text.";
             request.Data.SetText("Hello World!");
+        }
+
+        private void flipView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Console.WriteLine("A");
+
         }
     }
 }

@@ -164,7 +164,8 @@
             
             ItemsSource="{x:Bind MangaCVS.View}"
             ItemTemplate="{x:Bind flipViewData}"
-            x:Name="flipView" RightTapped="flipView_RightTapped">
+            SelectedIndex="{x:Bind Index, Mode=TwoWay}"
+            x:Name="flipView" RightTapped="flipView_RightTapped" SelectionChanged="flipView_SelectionChanged">
             <FlipView.ItemContainerStyle>
                 <Style TargetType="FlipViewItem">
                     <!-- The ContextFlyout will be shown when the user requests a context menu. -->
