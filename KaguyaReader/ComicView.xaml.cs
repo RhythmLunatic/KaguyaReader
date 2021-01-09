@@ -104,12 +104,19 @@ namespace KaguyaReader
                     trueIndex--;
                 Debug.WriteLine("flipView pos "+value.ToString()+" | comic pos: "+trueIndex.ToString());
                 
-                if (value > 2)
+                //If < 0, the flipView has unloaded! Do not do anything, garbage collector will clean it
+                if (value < 0)
+                {
+                    return;
+                }
+                else if (value > 2)
                 {
                     if (trueIndex + 2 <= supplier.numEntries-1)
                     {
-                        Debug.WriteLine("Loading new image at idx " + (trueIndex + 2).ToString());
-                        ImageCollection.Add(supplier.getImageAtIdx(trueIndex + 2).Result);
+                        Debug.WriteLine("Loading new image at idx " + (trueIndex + 2).ToString() +" and appending to back");
+                        ImageCollection.Add(supplier.getImageAtIdxSync(trueIndex + 2));
+                        Debug.WriteLine("Unloading image at front now...");
+                        //ImageCollection.RemoveAt(0);
                     }
                     else
                     {
@@ -120,7 +127,10 @@ namespace KaguyaReader
                 {
                     if (trueIndex - 2 >= 0)
                     {
-                        ImageCollection.Insert(0, supplier.getImageAtIdx(trueIndex - 2).Result);
+                        Debug.WriteLine("Loading new image at idx " + (trueIndex - 2).ToString() + " and appending to front");
+                        ImageCollection.Insert(0, supplier.getImageAtIdxSync(trueIndex - 2));
+                        Debug.WriteLine("Unloading image at end now...");
+                        ImageCollection.RemoveAt(ImageCollection.Count - 1);
                     }
                 }
                 _Index = value;

@@ -79,6 +79,8 @@ namespace KaguyaReader
             {
                 Debug.WriteLine("Opened file successfully!");
                 var memStream = new MemoryStream();
+                Debug.WriteLine("Await copytoasync");
+                //Crash here because the flipview is not async
                 await stream.CopyToAsync(memStream);
                 memStream.Position = 0;
                 var bitmap = new BitmapImage();
@@ -92,5 +94,20 @@ namespace KaguyaReader
             }
         }
 
+        public MangaImage getImageAtIdxSync(int i)
+        {
+            Debug.WriteLine("New image demanded at idx " + i.ToString());
+            using (Stream stream = entries.ElementAt(i).Open())
+            {
+                Debug.WriteLine("Opened file successfully!");
+                var memStream = new MemoryStream();
+                stream.CopyTo(memStream);
+                memStream.Position = 0;
+                var bitmap = new BitmapImage();
+                bitmap.SetSource(memStream.AsRandomAccessStream());
+                Debug.WriteLine("Returning decoded image obj...");
+                return new MangaImage(bitmap);
+            }
+        }
     }
 }
