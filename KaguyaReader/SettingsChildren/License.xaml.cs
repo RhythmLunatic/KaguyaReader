@@ -33,8 +33,8 @@ namespace KaguyaReader.SettingsChildren
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            StorageFile file = await MangaUtils.getFileFromAssets("LICENSE");
-            Text.Text = await FileIO.ReadTextAsync(file);
+            StorageFile file = await MangaUtils.getFileFromAssets("gplv3.html");
+            Text.NavigateToString(await FileIO.ReadTextAsync(file));
             /*byte[] result;
             using (Stream stream = await file.OpenStreamForReadAsync())
             {

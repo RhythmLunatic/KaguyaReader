@@ -9,6 +9,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <TextBox x:Name="Text" Text="Testestsetsetset" AcceptsReturn="True" IsReadOnly="True" HorizontalAlignment="Stretch"></TextBox>
+        <!--<TextBox x:Name="Text" Text="Testestsetsetset" AcceptsReturn="True" IsReadOnly="True" HorizontalAlignment="Stretch"></TextBox>-->
+        <WebView x:Name="Text" HorizontalAlignment="Stretch"/>
     </Grid>
 </Page>

@@ -75,6 +75,19 @@ namespace KaguyaReader
         }
     }
 
+    //arrrgggggghhhhhhahghghghhghghghghgh UWP is so bad
+    /*public class ImageMemoryManager
+    {
+
+        //For archives manual memory management is needed...
+        private BitmapImage placeholderImage;
+        ObservableCollection<MangaImage> ImageCollection;
+        private Dictionary<int, BitmapImage> imageMemoryManager;
+        public BitmapImage getImageAtIdx(int idx)
+        {
+
+        }
+    }*/
 
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
@@ -89,6 +102,7 @@ namespace KaguyaReader
 
         ObservableCollection<MangaImage> ImageCollection = new ObservableCollection<MangaImage>();
         OnDemandCbzSupplier supplier = new OnDemandCbzSupplier();
+        BitmapImage placeholderImage;
 
         //Actual position in the cbz
         int trueIndex = 0;
@@ -98,59 +112,87 @@ namespace KaguyaReader
             get { return _Index; } 
             set
             {
-                /*if (value > _Index)
-                    trueIndex++;
-                else if (value < _Index)
-                    trueIndex--;
-                Debug.WriteLine("flipView pos "+value.ToString()+" | comic pos: "+trueIndex.ToString());*/
-                
                 //If < 0, the flipView has unloaded! Do not do anything, garbage collector will clean it
                 if (value < 0)
                 {
                     return;
                 }
-                else if (value > _Index)
+                List<int> imagesLoaded = null;
+                if (value > 1)
                 {
-                    if (value + 2 <= supplier.numEntries-1)
+                    var result = supplier.getImageAtIdxSync(value - 1);
+                    ImageCollection[value - 1].Image = result.Item1;
+                    imagesLoaded = result.Item2;
+                }
+                if (value + 1 < ImageCollection.Count)
+                {
+                    var result = supplier.getImageAtIdxSync(value + 1);
+                    ImageCollection[value + 1].Image = result.Item1;
+                    imagesLoaded = result.Item2;
+                }
+                if (imagesLoaded != null)
+                {
+                    //ImageCollection[imageToUnload].Image = placeholderImage;
+                    //Wrongest way to free memory
+                    for (int i = 0; i < ImageCollection.Count; i++)
                     {
+                        if (!imagesLoaded.Contains(i) && ImageCollection[i].Image != placeholderImage)
+                            ImageCollection[i].Image = placeholderImage;
+                    }
+                }
+                /*if (value > _Index)
+                    trueIndex++;
+                else if (value < _Index)
+                    trueIndex--;
+                Debug.WriteLine("flipView pos "+value.ToString()+" | comic pos: "+trueIndex.ToString());*/
 
-                        Debug.WriteLine("Unloading image at front now...");
-                        //Because I can't remove from the pool, just do this...
-                        //It replaces the oldest image with the newest one so the oldest one gets removed from the memory pool
-                        if (value > 2)
-                            ImageCollection[value - 2] = ImageCollection[value];
-
-
-                        //TODO: Actually collection size should just be the same size as the number of pages in the manga
-                        if (value+2>ImageCollection.Count-1)
+                    //If < 0, the flipView has unloaded! Do not do anything, garbage collector will clean it
+                    /*if (value < 0)
+                    {
+                        return;
+                    }
+                    else if (value > _Index)
+                    {
+                        if (value + 2 <= supplier.numEntries-1)
                         {
 
-                            Debug.WriteLine("Loading new image at idx " + (value + 2).ToString() + " and appending to back");
-                            ImageCollection.Add(supplier.getImageAtIdxSync(value + 2));
-                            Debug.WriteLine("Collection size is now " + ImageCollection.Count.ToString());
+                            Debug.WriteLine("Unloading image at front now...");
+                            //Because I can't remove from the pool, just do this...
+                            //It replaces the oldest image with the newest one so the oldest one gets removed from the memory pool
+                            if (value > 2)
+                                ImageCollection[value - 2] = ImageCollection[value];
+
+
+                            //TODO: Actually collection size should just be the same size as the number of pages in the manga
+                            if (value+2>ImageCollection.Count-1)
+                            {
+
+                                Debug.WriteLine("Loading new image at idx " + (value + 2).ToString() + " and appending to back");
+                                ImageCollection.Add(supplier.getImageAtIdxSync(value + 2));
+                                Debug.WriteLine("Collection size is now " + ImageCollection.Count.ToString());
+                            }
+                            else
+                            {
+                                Debug.WriteLine("Loading new image at idx " + (value + 2).ToString());
+                                ImageCollection[value + 2] = supplier.getImageAtIdxSync(value + 2);
+                            }
                         }
                         else
                         {
-                            Debug.WriteLine("Loading new image at idx " + (value + 2).ToString());
-                            ImageCollection[value + 2] = supplier.getImageAtIdxSync(value + 2);
+                            Debug.WriteLine("Already hit end? " + supplier.numEntries.ToString());
                         }
                     }
-                    else
+                    else if (value < _Index)
                     {
-                        Debug.WriteLine("Already hit end? " + supplier.numEntries.ToString());
-                    }
-                }
-                else if (value < _Index)
-                {
-                    if (value - 2 >= 0)
-                    {
-                        Debug.WriteLine("Loading new image at idx " + (value - 2).ToString() + " and appending to front");
-                        ImageCollection[value-2] = supplier.getImageAtIdxSync(value - 2);
-                        Debug.WriteLine("Unloading image at end now...");
-                        if (value < supplier.numEntries + 1)
-                            ImageCollection[value + 2] = ImageCollection[value];
-                    }
-                }
+                        if (value - 2 >= 0)
+                        {
+                            Debug.WriteLine("Loading new image at idx " + (value - 2).ToString());
+                            ImageCollection[value-2] = supplier.getImageAtIdxSync(value - 2);
+                            Debug.WriteLine("Unloading image at end...");
+                            if (value + 2 < ImageCollection.Count - 1)
+                                ImageCollection[value + 2] = ImageCollection[value];
+                        }
+                    }*/
                 _Index = value;
             }
         }
@@ -255,6 +297,13 @@ namespace KaguyaReader
             for (int i = 0; i < Math.Min(count.Result, 5); i++)
             {
                 ImageCollection.Add(await supplier.getImageAtIdx(i));
+            }
+
+            placeholderImage = await MangaUtils.LoadImageFromAssets("Square44x44Logo.targetsize-24_altform-unplated.png");
+            //These are all separate images because we want to replace the bitmap in any image without affecting another
+            while (ImageCollection.Count < count.Result)
+            {
+                ImageCollection.Add(new MangaImage(placeholderImage));
             }
 
         }

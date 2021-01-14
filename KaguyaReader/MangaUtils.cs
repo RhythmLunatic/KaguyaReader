@@ -96,7 +96,7 @@ namespace KaguyaReader
             StorageFile file;
             try
             {
-                file = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFileAsync(fileName);
+                file = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFileAsync(@"Assets\" + fileName);
             }
             catch
             {
@@ -122,7 +122,7 @@ namespace KaguyaReader
             StorageFile file;
             try
             {
-                file = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFileAsync(@"Assets\"+fileName);
+                file = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFileAsync(@"Assets\" + fileName);
             }
             catch
             {
